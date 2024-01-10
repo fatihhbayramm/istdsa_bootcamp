@@ -2,8 +2,8 @@ import numpy as np
 import pickle
 import streamlit as st
 import pandas as pd
-from PIL import Image
-from sklearn.preprocessing import StandardScaler
+
+
 
 
 st.set_page_config(
