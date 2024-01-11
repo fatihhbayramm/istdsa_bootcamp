@@ -22,7 +22,7 @@ st.image("https://www.hamiltonhealthsciences.ca/wp-content/uploads/2019/06/strok
 
 from joblib import load
 
-logreg_model = load('pages/logreg_model.pkl')
+logreg_model = load('logreg_model.pkl')
 
 def stroke_prediction(input_data):
    
