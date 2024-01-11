@@ -1,10 +1,8 @@
-import numpy as np
-import pandas as pd
 import streamlit as st
-import pickle
-from sklearn.preprocessing import StandardScaler
 
 
+
+# Sayfa Ayarları
 
 
 st.set_page_config(
@@ -15,162 +13,41 @@ st.set_page_config(
         "About": "For More Information\n" + "https://github.com/burakakay/Project-3-Machine-Learning-Classification-"
     }
 )
-#resim ekleme
-st.image("https://www.hamiltonhealthsciences.ca/wp-content/uploads/2019/06/stroke-1024x683.jpg", width=700)     #resim ekleme")
 
 
+# Başlık Ekleme
+st.title("Stroke Classification Project")
 
-from joblib import load
+# Markdown Oluşturma
+st.markdown("This project aims to utilize machine learning for predicting the risk of stroke among hospital patients. The stroke prediction model evaluates the likelihood of stroke based on patients' demographic information and health characteristics.")
+#Video Ekleme
+# YouTube video URL
+youtube_url = "https://www.youtube.com/watch?v=-NJm4TJ2it0&ab_channel=TED-Ed"
+# YouTube videosunu göm
+st.video(youtube_url)
 
-logreg_model = load('pages/logreg_model.pkl')
+import streamlit as st
 
-def stroke_prediction(input_data):
-   
-    # changing the input_data to numpy array
-    input_data_as_numpy_array = np.asarray(input_data)
+markdown_text = """
 
-    # reshape the array as we are predicting for one instance
-    input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
-    
-    
-    prediction = logreg_model.predict_proba(input_data_reshaped)[:, 1][0]
-    prediction_proba = logreg_model.predict_proba(input_data_reshaped)
-    return prediction_proba, prediction*100
-def main():
-    st.title('Stroke Prediction')
+## Data Collection
+The hospital has collected a dataset containing patient records and demographic information. Features in the dataset include age, hypertension status, history of heart disease, average glucose level, body mass index (BMI), gender, smoking status, marital status, work type, and residence type.
 
-   
-    st.write("""
-    The World Health Organization (WHO) identifies strokes as the second leading cause of death globally. A stroke happens when a person’s blood supply to their brain is interrupted or reduced, causing brain cells to die within minutes. It prevents the brain tissue from getting the oxygen and nutrients that it needs and is responsible for approximately 11% of total deaths.
+## Machine Learning Model
+The employed model involves a trained classification algorithm on the collected dataset. The model learns the interaction between features and the stroke status of patients, enabling it to predict the stroke risk for new patients.
 
-    The website aims at classifying the stroke based on the input parameters like gender, age, various diseases, and smoking status. Since, the project is related to medical domain multiple models were trained and their performance was compared considering the sensitivity, accuracy, as well as specificity scores in the course: CSL2050 Pattern Recognition and Machine Learning under Prof. Richa Singh.
-    """)
+## Application Interface
+Patients can input the necessary information through a web application. The web application utilizes the machine learning model to assess the stroke risk based on the entered information.
 
-    with st.sidebar:
-        st.sidebar.header('User Input')
-        gender = st.selectbox("Gender",('Male', 'Female'))
-        _gender = gender
-        if(gender == 'Male'):
-            gender = 1
-    
-        else:
-            gender = 2
+## Results
+The project can assist the hospital in predicting and proactively addressing the stroke risk among patients. Additionally, it contributes to informed health decision-making for patients.
 
-        age = st.slider('Age', 1, 120)
-        _age = age
-        age = (age-43.22661448140902)/(22.61043402711303)
+---
 
-        hypertension = st.radio("Hypertension",('Yes', 'No'))
-        _hypertension = hypertension
-        if(hypertension == 'Yes'):
-            hypertension = 1
-        else:
-            hypertension = 0
+*Note: This project summary encompasses a machine learning application used to assess patients' health conditions. Ensuring compliance with ethical and legal requirements is essential for real-world implementation.*
+"""
 
-        heart_disease = st.radio("Heart Disease",('Yes', 'No'))
-        _heart_disease = heart_disease
-        if(heart_disease == 'Yes'):
-            heart_disease = 1
-        else:
-            heart_disease = 0
+# Streamlit Markdown
+st.markdown(markdown_text)
 
-        ever_married = st.radio("Ever Married",('Yes', 'No'))
-        _ever_married = ever_married
-        if(ever_married == 'Yes'):
-            ever_married = 1
-        else:
-            ever_married = 0
-
-        stress_lvl = st.selectbox("Stress Level",('High', 'Medium', 'Low'))
-        _stress_lvl = stress_lvl
-        if(stress_lvl == 'Medium'):
-            stress_lvl = 1
-        elif(stress_lvl == 'Low'):
-            stress_lvl = 0
-        elif(stress_lvl == 'Medium'):
-            stress_lvl = 1
-        else:
-            stress_lvl = 2
-        
-        
-      
-        
-        Residence_type = st.radio("Residence Type",('Rural', 'Urban'))
-        _Residence_type = Residence_type
-        if(Residence_type == "Rural"):
-            Residence_type = 0
-        else:
-            Residence_type = 1
-
-        avg_glucose_level = st.slider('Average Glucose Level',1,350)
-        _avg_glucose_level = avg_glucose_level
-        avg_glucose_level = (avg_glucose_level-106.14767710371795)/(45.27912905705893)
-
-        diabetes=st.selectbox("Diabetes",('Normal', 'Prediabetes', 'Diabetes'))
-        _diabetes=diabetes
-        if(diabetes == 'Normal'):
-            diabetes = 1
-        elif(diabetes == 'Prediabetes'):
-            diabetes = 2
-        else:
-            diabetes = 0
-
-        smoking_status = st.selectbox("Smoking Status",('Formerly Smoked', 'Never Smoked', 'Smokes', 'Unknown'))
-        _smoking_status = smoking_status
-        if(smoking_status == "Formerly Smoked"):
-            smoking_status = 1
-        elif(smoking_status == "Never Smoked"):
-            smoking_status = 2
-        elif(smoking_status == "Smokes"):
-            smoking_status = 3
-        else:
-            smoking_status = 0
-
-        diagnosis = 0
-        
-        if st.button('Stroke Test Result'):
-            prediction_proba, diagnosis = stroke_prediction([gender, age, hypertension, heart_disease, ever_married, stress_lvl, Residence_type, avg_glucose_level, diabetes, smoking_status])
-
-    data = {'Gender': _gender,
-            'Age': _age,
-            'Hypertension': _hypertension,
-            'Heart Disease': _heart_disease,
-            'Ever Married': _ever_married,
-            'Stress Level': _stress_lvl,
-            'Residence Type' : _Residence_type,
-            'Avg Glucose Level': _avg_glucose_level,
-            'Diabetes': _diabetes,
-            'Smoking Status': _smoking_status
-        }
-    features = pd.DataFrame(data, index=[0])
-
-    input_df = pd.DataFrame(features)
-    strokes = pd.DataFrame(columns=["Gender", "Age", "Hypertension", "Heart Disease", "Ever Married","Stress Level","Residence Type", "Avg Glucose Level","Diabetes", "Smoking Status"])
-
-    df = pd.concat([input_df,strokes],axis=0)
-
-    df_input = df[:1]
-    st.subheader('Input features')
-    st.write(df_input)
-
-    if(diagnosis == 0):
-        st.info("Please press 'Stroke Test Result' button for prediction!!")
-    elif(diagnosis >= 75):
-        st.error(f'You have {diagnosis}% chance of having a stroke. Please consult a Neurologist.')
-        st.subheader('Prediction Probabilities')
-        st.write(prediction_proba)
-    elif(diagnosis >= 40 and diagnosis < 75):
-        st.warning(f'You have {diagnosis}% chance of having a stroke. It is advised to take precautions.')
-        st.subheader('Prediction Probabilities')
-        st.write(prediction_proba)
-    else:
-        st.success(f'You have {diagnosis}% chance of having a stroke.')
-        st.subheader('Prediction Probabilities')
-        st.write(prediction_proba)
-
-if __name__ == '__main__':
-    main()
-
-
-
- 
+st.sidebar.success("Select a page above.")
