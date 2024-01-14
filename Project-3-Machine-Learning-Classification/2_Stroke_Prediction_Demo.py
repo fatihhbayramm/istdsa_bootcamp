@@ -37,14 +37,14 @@ logreg_model = load('logreg_model.pkl')
 def stroke_prediction(input_data):
    
     # changing the input_data to numpy array
-    input_data_as_numpy_array = np.asarray(input_data)
+    #input_data_as_numpy_array = np.asarray(input_data)
 
     # reshape the array as we are predicting for one instance
-    input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
+    input_data = np.array(input_data).reshape(1,-1)
     
+    prediction_proba = logreg_model.predict_proba(input_data)
+    prediction = logreg_model.predict_proba(input_data)[0][1]  #[:, 1][0]
     
-    prediction = logreg_model.predict_proba(input_data_reshaped)[:, 1][0]
-    prediction_proba = logreg_model.predict_proba(input_data_reshaped)
     return prediction_proba, prediction*100
 def main():
     st.title('Stroke Prediction')
