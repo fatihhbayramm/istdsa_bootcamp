@@ -1,10 +1,11 @@
 import numpy as np
-import pandas as pd
-import streamlit as st
 import pickle
-from sklearn.preprocessing import StandardScaler
+import streamlit as st
+import pandas as pd
 
 
+
+# Sayfa Ayarları
 
 
 st.set_page_config(
@@ -15,162 +16,143 @@ st.set_page_config(
         "About": "For More Information\n" + "https://github.com/burakakay/Project-3-Machine-Learning-Classification-"
     }
 )
-#resim ekleme
-st.image("https://www.hamiltonhealthsciences.ca/wp-content/uploads/2019/06/stroke-1024x683.jpg", width=700)     #resim ekleme")
+
+
+# Başlık Ekleme
+st.title("Stroke Classification Project")
+
+# Markdown Oluşturma
+st.markdown("This project aims to utilize machine learning for predicting the risk of stroke among hospital patients. The stroke prediction model evaluates the likelihood of stroke based on patients' demographic information and health characteristics.")
+st.markdown("Explore the power of Machine Learning! click on the **:green[Stroke Prediction Demo]** tab in the left menu")
+#Video Ekleme
+# YouTube video URL
+youtube_url = "https://www.youtube.com/watch?v=-NJm4TJ2it0&ab_channel=TED-Ed"
+# YouTube videosunu göm
+st.video(youtube_url)
+#İnme hakkında özet
+st.write("Stroke is a life-threatening condition with severe consequences, including vision and speech loss, paralysis, and confusion. Those who have experienced a previous stroke face an elevated risk of further episodes. Annually, 15 million people worldwide suffer strokes, resulting in 5 million deaths and 5 million permanent disabilities. High blood pressure and tobacco use are major modifiable risk factors, with regulating blood pressure potentially preventing four out of ten stroke-related deaths in individuals under 65. While the incidence of stroke is declining in developed countries due to better control of risk factors, the aging population contributes to an overall increase in stroke cases.")
+
+
+import streamlit as st
+
+markdown_text = """
+
+* ## Data Collection
+The **Ministry of Health** has collected a dataset containing patient records and demographic information. Features in the dataset include **age**, **hypertension status**, history of **heart disease**, average **glucose level**, **body mass index (BMI)**, **gender**, **smoking status**, **marital status**, **work type**, and **residence type**.
+
+* ## Machine Learning Model
+The employed model involves a trained **classification algorithm** on the collected dataset. The model learns the interaction between features and the **stroke status** of patients, enabling it to predict the **stroke risk** for new patients.
+
+* ## Application Interface
+Patients can input the necessary information through a **web application**. The web application utilizes the **machine learning model** to assess the **stroke risk** based on the entered information.
+
+* ## Results
+The project can assist the hospital in predicting and proactively addressing the **stroke risk** among patients. Additionally, it contributes to informed health decision-making for patients.
+
+---
+**:red[Important Notice:]**
+This project brief outlines a machine learning application designed to evaluate patients' health status. However, it's crucial to note that this application does not offer precise information about your health. For accurate health assessments, please consult with your primary healthcare provider. Your first doctor is the best source for personalized health guidance.
+
+*We emphasize the importance of professional medical advice and encourage you to make informed decisions about your well-being under the guidance of qualified healthcare professionals.*
+
+
+"""
+
+# Streamlit Markdown
+st.markdown(markdown_text)
+st.markdown("## **Find the Nearest Hospital:**")
 
 
 
-from joblib import load
+st.sidebar.success("Select a page above.")
 
-logreg_model = load('logreg_model.pkl')
 
-def stroke_prediction(input_data):
-   
-    # changing the input_data to numpy array
-    input_data_as_numpy_array = np.asarray(input_data)
+import streamlit.components.v1 as components
 
-    # reshape the array as we are predicting for one instance
-    input_data_reshaped = input_data_as_numpy_array.reshape(1,-1)
-    
-    
-    prediction = logreg_model.predict_proba(input_data_reshaped)[:, 1][0]
-    prediction_proba = logreg_model.predict_proba(input_data_reshaped)
-    return prediction_proba, prediction*100
-def main():
-    st.title('Stroke Prediction')
+# Load the HTML and JavaScript code
+html_code = """
+<!DOCTYPE html>
+<html>
 
-   
-    st.write("""
-    The World Health Organization (WHO) identifies strokes as the second leading cause of death globally. A stroke happens when a person’s blood supply to their brain is interrupted or reduced, causing brain cells to die within minutes. It prevents the brain tissue from getting the oxygen and nutrients that it needs and is responsible for approximately 11% of total deaths.
+<head>
+  <title>Map Example</title>
+  <style>
+    html,
+    body,
+    #map-canvas {
+      height: 100%;
+      margin: 0px;
+      padding: 0px
+    }
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMPBP62NREvGoMfP6FT5vKKseKrNS60r8&v=3.exp&libraries=places"></script>
+</head>
 
-    The website aims at classifying the stroke based on the input parameters like gender, age, various diseases, and smoking status. Since, the project is related to medical domain multiple models were trained and their performance was compared considering the sensitivity, accuracy, as well as specificity scores in the course: CSL2050 Pattern Recognition and Machine Learning under Prof. Richa Singh.
-    """)
+<body>
+  <div id="map-canvas"></div>
 
-    with st.sidebar:
-        st.sidebar.header('User Input')
-        gender = st.selectbox("Gender",('Male', 'Female'))
-        _gender = gender
-        if(gender == 'Male'):
-            gender = 1
-    
-        else:
-            gender = 2
+  <script>
+    var map;
+    var services;
+    var infowindow;
 
-        age = st.slider('Age', 1, 120)
-        _age = age
-        age = (age-43.22661448140902)/(22.61043402711303)
+    function initialize() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-        hypertension = st.radio("Hypertension",('Yes', 'No'))
-        _hypertension = hypertension
-        if(hypertension == 'Yes'):
-            hypertension = 1
-        else:
-            hypertension = 0
+          map = new google.maps.Map(document.getElementById('map-canvas'), {
+            center: userLocation,
+            zoom: 15
+          });
 
-        heart_disease = st.radio("Heart Disease",('Yes', 'No'))
-        _heart_disease = heart_disease
-        if(heart_disease == 'Yes'):
-            heart_disease = 1
-        else:
-            heart_disease = 0
+          var request = {
+            location: userLocation,
+            radius: 200,
+            types: ['hospital', 'health']
+          };
 
-        ever_married = st.radio("Ever Married",('Yes', 'No'))
-        _ever_married = ever_married
-        if(ever_married == 'Yes'):
-            ever_married = 1
-        else:
-            ever_married = 0
+          infowindow = new google.maps.InfoWindow();
+          var service = new google.maps.places.PlacesService(map);
+          service.nearbySearch(request, callback);
+        }, function (error) {
+          console.error("Error getting user location:", error);
+        });
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    }
 
-        stress_lvl = st.selectbox("Stress Level",('High', 'Medium', 'Low'))
-        _stress_lvl = stress_lvl
-        if(stress_lvl == 'Medium'):
-            stress_lvl = 1
-        elif(stress_lvl == 'Low'):
-            stress_lvl = 0
-        elif(stress_lvl == 'Medium'):
-            stress_lvl = 1
-        else:
-            stress_lvl = 2
-        
-        
-      
-        
-        Residence_type = st.radio("Residence Type",('Rural', 'Urban'))
-        _Residence_type = Residence_type
-        if(Residence_type == "Rural"):
-            Residence_type = 0
-        else:
-            Residence_type = 1
-
-        avg_glucose_level = st.slider('Average Glucose Level',1,350)
-        _avg_glucose_level = avg_glucose_level
-        avg_glucose_level = (avg_glucose_level-106.14767710371795)/(45.27912905705893)
-
-        diabetes=st.selectbox("Diabetes",('Normal', 'Prediabetes', 'Diabetes'))
-        _diabetes=diabetes
-        if(diabetes == 'Normal'):
-            diabetes = 1
-        elif(diabetes == 'Prediabetes'):
-            diabetes = 2
-        else:
-            diabetes = 0
-
-        smoking_status = st.selectbox("Smoking Status",('Formerly Smoked', 'Never Smoked', 'Smokes', 'Unknown'))
-        _smoking_status = smoking_status
-        if(smoking_status == "Formerly Smoked"):
-            smoking_status = 1
-        elif(smoking_status == "Never Smoked"):
-            smoking_status = 2
-        elif(smoking_status == "Smokes"):
-            smoking_status = 3
-        else:
-            smoking_status = 0
-
-        diagnosis = 0
-        
-        if st.button('Stroke Test Result'):
-            prediction_proba, diagnosis = stroke_prediction([gender, age, hypertension, heart_disease, ever_married, stress_lvl, Residence_type, avg_glucose_level, diabetes, smoking_status])
-
-    data = {'Gender': _gender,
-            'Age': _age,
-            'Hypertension': _hypertension,
-            'Heart Disease': _heart_disease,
-            'Ever Married': _ever_married,
-            'Stress Level': _stress_lvl,
-            'Residence Type' : _Residence_type,
-            'Avg Glucose Level': _avg_glucose_level,
-            'Diabetes': _diabetes,
-            'Smoking Status': _smoking_status
+    function callback(results, status) {
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+          createMarker(results[i]);
         }
-    features = pd.DataFrame(data, index=[0])
+      }
+    }
 
-    input_df = pd.DataFrame(features)
-    strokes = pd.DataFrame(columns=["Gender", "Age", "Hypertension", "Heart Disease", "Ever Married","Stress Level","Residence Type", "Avg Glucose Level","Diabetes", "Smoking Status"])
+    function createMarker(place) {
+      var placeLoc = place.geometry.location;
+      var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+      });
 
-    df = pd.concat([input_df,strokes],axis=0)
+      google.maps.event.addListener(marker, 'click', function () {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+      });
+    }
 
-    df_input = df[:1]
-    st.subheader('Input features')
-    st.write(df_input)
+    google.maps.event.addDomListener(window, 'load', initialize);
+  </script>
+</body>
 
-    if(diagnosis == 0):
-        st.info("Please press 'Stroke Test Result' button for prediction!!")
-    elif(diagnosis >= 75):
-        st.error(f'You have {diagnosis}% chance of having a stroke. Please consult a Neurologist.')
-        st.subheader('Prediction Probabilities')
-        st.write(prediction_proba)
-    elif(diagnosis >= 40 and diagnosis < 75):
-        st.warning(f'You have {diagnosis}% chance of having a stroke. It is advised to take precautions.')
-        st.subheader('Prediction Probabilities')
-        st.write(prediction_proba)
-    else:
-        st.success(f'You have {diagnosis}% chance of having a stroke.')
-        st.subheader('Prediction Probabilities')
-        st.write(prediction_proba)
+</html>
+"""
 
-if __name__ == '__main__':
-    main()
+# Display the HTML and JavaScript code
+components.html(html_code, height=600)
 
 
 
- 
